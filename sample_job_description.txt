@@ -1,0 +1,5 @@
+Software / AI-ML Engineer
+
+Requirements:
+Python, SQL, Machine Learning, Git, REST API, Communication.
+Knowledge of Data Structures and OOP is preferred.

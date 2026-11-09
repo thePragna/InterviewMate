@@ -1,0 +1,47 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:transparent;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#f3f7fb}
+#wrap{position:relative;border:1px solid #203451;border-radius:16px;overflow:hidden;background:#050b14}
+video{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#000;transform:scaleX(-1)}
+#bar{display:flex;align-items:center;gap:8px;padding:9px 11px;font-size:12px;background:#0d1b2e;border-top:1px solid #203451;min-height:38px}
+#dot{flex:none;width:9px;height:9px;border-radius:50%;background:#8896aa}.ok{background:#27d17f!important}.bad{background:#ff5d5d!important}
+#warning{display:none;position:absolute;left:10px;right:10px;top:10px;text-align:center;padding:11px 8px;border-radius:12px;background:rgba(153,32,43,.94);border:1px solid #ff8585;color:white;font-size:14px;font-weight:800;box-shadow:0 5px 20px #0008}
+#counter{font-weight:800;color:#ffb7b7}
+@media(max-width:520px){#bar{font-size:11px;padding:8px}#warning{font-size:12px;top:7px;left:7px;right:7px;padding:8px}}
+</style></head><body>
+<div id="wrap"><video id="v" autoplay playsinline muted></video><div id="warning">⚠️ Look at center · Warning <span id="wc">1</span>/10</div><div id="bar"><span id="dot"></span><span id="msg">Waiting for camera permission…</span><span id="counter" style="margin-left:auto"></span></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+<script>
+(function(){
+ var video=document.getElementById('v'),dot=document.getElementById('dot'),msg=document.getElementById('msg'),wrap=document.getElementById('wrap'),warning=document.getElementById('warning'),wc=document.getElementById('wc'),counter=document.getElementById('counter');
+ var mode='check',session='',strictFocus=true,started=false,cameraOk=false,armed=false,locked=false,armTimer=null,stream=null,faceMesh=null,frameBusy=false;
+ var warningCount=0,lookAwayActive=false,lookAwaySince=0,lookAwayWarned=false,lastWarningAt=0,warningHideTimer=null,warningLimit=10,lookAwayThresholdMs=1200,warningCooldownMs=2500;
+ var LABEL={tab_hidden:'tab switch detected',window_blur:'window focus lost',camera_lost:'camera lost',camera_denied:'camera unavailable',gaze_terminated:'10 look-away warnings reached'};
+ function post(type,extra){var m={isStreamlitMessage:true,type:type};for(var k in extra)m[k]=extra[k];window.parent.postMessage(m,'*');}
+ function emit(type,extra){var v={type:type,session:session,mode:mode,at:Date.now(),warning_count:warningCount};for(var k in extra)v[k]=extra[k];post('streamlit:setComponentValue',{value:v,dataType:'json'});}
+ function setHeight(){post('streamlit:setFrameHeight',{height:Math.ceil(wrap.getBoundingClientRect().height)+4});}
+ function status(kind,text){dot.className=kind==='ok'?'ok':kind==='bad'?'bad':'';msg.textContent=text;setHeight();}
+ function violation(kind){if(mode!=='monitor'||!armed||locked)return;locked=true;status('bad','Interview ended: '+(LABEL[kind]||kind));emit(kind);stopCamera();}
+ function showWarning(){warningCount++;wc.textContent=warningCount;counter.textContent='Warnings '+warningCount+'/10';warning.style.display='block';warning.setAttribute('aria-live','assertive');if(warningHideTimer)clearTimeout(warningHideTimer);warningHideTimer=setTimeout(function(){if(!locked)warning.style.display='none';},2200);status('bad','Look at center · Warning '+warningCount+'/10');emit('gaze_warning',{warning_count:warningCount,message:'Look at center'});if(warningCount>=warningLimit){locked=true;warning.textContent='Interview terminated · Maximum 10 look-away warnings reached';warning.style.display='block';status('bad','Interview terminated after 10 warnings');emit('gaze_terminated',{warning_count:warningCount,detail:'Maximum look-away warnings reached'});stopCamera();}}
+ function processLandmarks(results){if(mode!=='monitor'||!armed||locked)return;var faces=results&&results.multiFaceLandmarks;if(!faces||!faces.length)return;var lm=faces[0];/* Nose displacement relative to the eye corners approximates a head turn; it is not biometric identity recognition. */var left=lm[33],right=lm[263],nose=lm[1];if(!left||!right||!nose)return;var eyeMid=(left.x+right.x)/2,eyeWidth=Math.abs(right.x-left.x)||.001;var offset=Math.abs(nose.x-eyeMid)/eyeWidth;var away=offset>0.145;var now=Date.now();if(away){if(!lookAwayActive){lookAwayActive=true;lookAwaySince=now;}if(!lookAwayWarned && now-lookAwaySince>=lookAwayThresholdMs && now-lastWarningAt>=warningCooldownMs){lookAwayWarned=true;lastWarningAt=now;showWarning();}}else{lookAwayActive=false;lookAwaySince=0;lookAwayWarned=false;}}
+ function initFaceMesh(){if(!window.FaceMesh)return;try{faceMesh=new FaceMesh({locateFile:function(file){return 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/'+file;}});faceMesh.setOptions({maxNumFaces:1,refineLandmarks:false,minDetectionConfidence:.55,minTrackingConfidence:.55});faceMesh.onResults(processLandmarks);var tick=function(){if(cameraOk&&video.readyState>=2&&faceMesh&&!frameBusy){frameBusy=true;faceMesh.send({image:video}).catch(function(){status('bad','Face-direction analysis failed; warnings are unavailable');}).finally(function(){frameBusy=false;});}if(cameraOk)requestAnimationFrame(tick);};requestAnimationFrame(tick);}catch(e){faceMesh=null;status('bad','Face direction check unavailable; camera monitoring remains on');}}
+ function cameraReady(){if(mode==='monitor'){status('ok','Camera on · look toward the center');armed=false;clearTimeout(armTimer);armTimer=setTimeout(function(){armed=true;status('ok','Camera on · monitoring active');counter.textContent='Warnings '+warningCount+'/10';},1600);emit('monitoring');}else{armed=false;clearTimeout(armTimer);status('ok','Camera ready · processed on this device');emit('camera_ready');}}
+ function cameraFailed(name){cameraOk=false;status('bad','Camera unavailable ('+name+')');if(mode==='monitor')locked=true;emit('camera_denied',{detail:name});}
+ function cameraLost(){cameraOk=false;status('bad','Camera disconnected');if(mode==='monitor'){if(locked)return;locked=true;}emit('camera_lost');stopCamera();}
+ function stopCamera(){armed=false;started=false;clearTimeout(armTimer);if(stream){stream.getTracks().forEach(function(t){try{t.stop()}catch(e){}});stream=null;}video.srcObject=null;cameraOk=false;}
+ function startCamera(){if(started)return;started=true;if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){cameraFailed('unsupported');return;}navigator.mediaDevices.getUserMedia({video:{width:{ideal:640},height:{ideal:480},facingMode:'user'},audio:false}).then(function(s){stream=s;video.srcObject=s;s.getVideoTracks().forEach(function(t){t.addEventListener('ended',cameraLost);});cameraOk=true;cameraReady();initFaceMesh();}).catch(function(e){cameraFailed((e&&e.name)||'error');});}
+ function configure(args){
+   var newMode=args.mode||'check',newSession=args.session||'',changed=newMode!==mode,sessionChanged=newSession!==session;
+   mode=newMode;session=newSession;strictFocus=args.strict_focus!==false;
+   if(mode==='stop'){locked=true;armed=false;stopCamera();status('','Camera and monitoring stopped');return;}
+   if(!started){startCamera();return;}
+   if(sessionChanged){locked=false;warningCount=0;lookAwayActive=false;lookAwaySince=0;lookAwayWarned=false;lastWarningAt=0;counter.textContent='Warnings 0/10';warning.style.display='none';}
+   if(changed&&cameraOk){locked=false;lookAwayActive=false;lookAwaySince=0;cameraReady();}
+ }
+ window.addEventListener('message',function(ev){var d=ev.data;if(d&&d.type==='streamlit:render')configure(d.args||{});});
+ document.addEventListener('visibilitychange',function(){if(document.hidden)violation('tab_hidden');});
+ var pw=null,pd=null;try{pw=window.parent;pd=pw.document;}catch(e){pw=pd=null;}if(pd){pd.addEventListener('visibilitychange',function(){if(pd.hidden)violation('tab_hidden');});pw.addEventListener('blur',function(){if(!strictFocus)return;setTimeout(function(){if(!pd.hasFocus())violation('window_blur');},250);});}
+ window.addEventListener('pagehide',stopCamera);window.addEventListener('beforeunload',stopCamera);if(window.ResizeObserver)new ResizeObserver(setHeight).observe(wrap);post('streamlit:componentReady',{apiVersion:1});setHeight();
+})();
+</script></body></html>

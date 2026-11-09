@@ -1,0 +1,726 @@
+{
+  "version": 1,
+  "source_note": "Curated original practice prompts for InterviewMate; not copied from proprietary interview datasets.",
+  "questions": [
+    {
+      "category": "Aptitude",
+      "question": "An investment grows by 20% and then falls by 20%. Is it back to its original value? Calculate the net change.",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Aptitude",
+      "question": "A can finish a task in 12 days and B in 18 days. How long will they take together, and what assumptions are you making?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Aptitude",
+      "question": "A train 180 metres long passes a pole in 9 seconds. Calculate its speed in km/h and explain the unit conversion.",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Aptitude",
+      "question": "A bag contains 5 red, 4 blue and 3 green balls. What is the probability of drawing two blue balls without replacement?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Aptitude",
+      "question": "The average of 8 numbers is 24. If one number is removed, the average becomes 22. Find the removed number.",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Aptitude",
+      "question": "A product is marked 40% above cost and sold at a 15% discount. Calculate the profit percentage.",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Aptitude",
+      "question": "A team completes 3/5 of a project in 12 days at a constant rate. Estimate the total duration and discuss when this estimate fails.",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Aptitude",
+      "question": "Compare the compound amount and simple-interest amount for a principal of ₹20,000 at 8% annually for 2 years.",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Aptitude",
+      "question": "A mixture contains milk and water in a 7:3 ratio. How much water must be added to 20 litres to make the ratio 7:5?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Aptitude",
+      "question": "A candidate scores 72, 81, 68 and 89. What score is needed in the fifth test to average 80?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Aptitude",
+      "question": "Explain how you would solve a time-and-work problem when workers have different efficiencies.",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Aptitude",
+      "question": "A value increases by 25%. By what percentage must the new value decrease to return to the original?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Logical Reasoning",
+      "question": "Find the next term and justify the rule: 3, 8, 15, 24, 35, __.",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Logical Reasoning",
+      "question": "Five people sit in a row under ordering constraints. Explain a systematic method to avoid missing valid arrangements.",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Logical Reasoning",
+      "question": "All analysts are graduates; some graduates are programmers. Can we conclude that some analysts are programmers? Explain logically.",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Logical Reasoning",
+      "question": "You have 8 visually identical balls and one is heavier. How can you identify it in two balance-scale weighings?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Logical Reasoning",
+      "question": "Four tasks have dependencies A before C, B before C, and C before D. How many valid task orders exist?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Logical Reasoning",
+      "question": "Identify the assumption in the claim: “Our app has more downloads, so users must be more satisfied.”",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Logical Reasoning",
+      "question": "You receive contradictory reports from two reliable sources. What steps would you take to determine which is correct?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Logical Reasoning",
+      "question": "Explain the difference between correlation and causation using a practical example.",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Logical Reasoning",
+      "question": "A statement is true only if both conditions X and Y hold. X is true but Y is false. What follows?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Logical Reasoning",
+      "question": "How would you solve a seating arrangement puzzle with circular positions and left/right direction constraints?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Logical Reasoning",
+      "question": "What is the difference between a necessary condition and a sufficient condition? Give examples.",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Logical Reasoning",
+      "question": "An argument uses three examples to claim something is always true. What reasoning weakness may be present?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Python",
+      "question": "Explain Python list/dict lookup complexity and how hash collisions are handled.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Python",
+      "question": "What are generators and iterators? When would a generator materially reduce memory use?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Python",
+      "question": "Explain shallow copy versus deep copy with a nested mutable object example.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Python",
+      "question": "What is the GIL in CPython, and how does it affect CPU-bound versus I/O-bound concurrency?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Python",
+      "question": "How do decorators work? Describe a practical use such as logging or timing functions.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Python",
+      "question": "Explain exception handling design: when should you catch an exception and when should you let it propagate?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Python",
+      "question": "How would you profile a slow Python function before attempting optimisation?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Python",
+      "question": "What are mutable default arguments, why are they dangerous, and how do you avoid the bug?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Python",
+      "question": "Explain context managers and how the with statement guarantees resource cleanup.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Python",
+      "question": "How would you design a robust Python module with configuration, logging, tests and clear interfaces?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Python",
+      "question": "Compare multiprocessing, threading and asyncio for three different workloads.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Python",
+      "question": "Write or describe a function that returns the first non-repeating character in a string and analyse its complexity.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DSA & Coding",
+      "question": "Solve Two Sum in O(n) time. Explain the data structure, invariant and space complexity.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DSA & Coding",
+      "question": "Given a linked list, detect whether it contains a cycle without using extra space.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DSA & Coding",
+      "question": "Find the longest substring without repeating characters. Explain a sliding-window solution.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DSA & Coding",
+      "question": "Given an array with positive and negative values, find the maximum subarray sum and justify the algorithm.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DSA & Coding",
+      "question": "How would you find the kth largest element in a large array? Compare sorting, heaps and quickselect.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DSA & Coding",
+      "question": "Explain binary search boundary errors and write a reliable approach for the first occurrence of a target.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DSA & Coding",
+      "question": "Given a binary tree, return its level-order traversal and discuss queue usage.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DSA & Coding",
+      "question": "How would you detect duplicate records in a stream when memory is limited?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DSA & Coding",
+      "question": "Compare an array, linked list, hash map, stack and queue using operation costs and use cases.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DSA & Coding",
+      "question": "Given coin denominations and a target amount, explain when greedy works and when dynamic programming is needed.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DSA & Coding",
+      "question": "How would you find the shortest path in an unweighted graph? What changes for weighted edges?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DSA & Coding",
+      "question": "You have a coding solution that passes samples but fails hidden tests. What debugging process would you follow?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Machine Learning & AI",
+      "question": "Your training accuracy is 99% but validation accuracy is 71%. Diagnose likely causes and propose a prioritised experiment plan.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Machine Learning & AI",
+      "question": "Explain data leakage and give two subtle examples that can make offline evaluation misleading.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Machine Learning & AI",
+      "question": "When would you choose precision, recall, F1, ROC-AUC or PR-AUC? Consider an imbalanced fraud dataset.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Machine Learning & AI",
+      "question": "Compare random forests, gradient boosting and logistic regression in terms of assumptions, interpretability and failure modes.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Machine Learning & AI",
+      "question": "How would you split a dataset when multiple samples come from the same person or device?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Machine Learning & AI",
+      "question": "Explain bias-variance trade-off and how learning curves help diagnose underfitting and overfitting.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Machine Learning & AI",
+      "question": "How would you handle missing values, outliers, categorical variables and distribution shift in a production pipeline?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Machine Learning & AI",
+      "question": "An ML model performs well offline but poorly after deployment. How would you investigate data and concept drift?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Machine Learning & AI",
+      "question": "Explain embeddings, attention and transformer self-attention at a level suitable for a technical interview.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Machine Learning & AI",
+      "question": "How would you make an ML inference service reliable under latency, memory and throughput constraints?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Machine Learning & AI",
+      "question": "For a rare-event classifier, how would you select a decision threshold and communicate trade-offs to stakeholders?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Machine Learning & AI",
+      "question": "How would you explain a model prediction to a non-technical stakeholder and validate the explanation?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DBMS & SQL",
+      "question": "Explain transaction ACID properties and describe a real failure each property helps prevent.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DBMS & SQL",
+      "question": "Given Orders and Customers tables, write a query to find each customer’s second-highest order value.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DBMS & SQL",
+      "question": "Explain indexes, their write cost and how you would use an execution plan to diagnose a slow query.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DBMS & SQL",
+      "question": "What anomalies can occur in a poorly normalised schema? When might denormalisation be justified?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DBMS & SQL",
+      "question": "Compare INNER JOIN, LEFT JOIN, EXISTS and a correlated subquery for a realistic use case.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DBMS & SQL",
+      "question": "Explain isolation levels and a non-repeatable read, dirty read and phantom read.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DBMS & SQL",
+      "question": "How would you design tables for an interview platform with users, sessions, questions and answers?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DBMS & SQL",
+      "question": "What is a database deadlock, how can it happen, and how would you prevent or recover from one?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DBMS & SQL",
+      "question": "How would you safely migrate a large production table without significant downtime?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DBMS & SQL",
+      "question": "Compare relational databases and document stores for an application with evolving user profiles.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DBMS & SQL",
+      "question": "Write a query to calculate monthly active users and explain the date-boundary assumptions.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "DBMS & SQL",
+      "question": "How would you investigate duplicate rows caused by a faulty join?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "OS & Networks",
+      "question": "Explain a deadlock using the four Coffman conditions and describe prevention versus avoidance.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "OS & Networks",
+      "question": "What happens from entering a URL to seeing a rendered page, including DNS, TCP/TLS, HTTP and caching?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "OS & Networks",
+      "question": "Compare processes, threads, context switching and shared-memory concurrency.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "OS & Networks",
+      "question": "How do virtual memory, paging and page faults work? What can cause thrashing?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "OS & Networks",
+      "question": "Explain TCP versus UDP and choose one for video calling, file transfer and DNS queries.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "OS & Networks",
+      "question": "What is a race condition? Describe how a mutex or semaphore can prevent it.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "OS & Networks",
+      "question": "Explain HTTP methods, idempotency, status codes and safe retry design for a REST API.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "OS & Networks",
+      "question": "A service works locally but times out in production. How would you isolate DNS, network, server and client causes?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "OS & Networks",
+      "question": "Compare symmetric and asymmetric encryption and explain the role of TLS certificates.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "OS & Networks",
+      "question": "How would you diagnose high CPU, high memory and high network latency on a Linux server?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "OS & Networks",
+      "question": "Explain load balancing, health checks and what happens when one application instance fails.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "OS & Networks",
+      "question": "What is the difference between authentication and authorisation? How would you secure an API?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Web Development & APIs",
+      "question": "Design REST endpoints for a booking service, including validation, errors, pagination and versioning.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Web Development & APIs",
+      "question": "Explain React state, props, effects and common causes of unnecessary re-renders.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Web Development & APIs",
+      "question": "How would you prevent duplicate payment or booking requests when clients retry after a timeout?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Web Development & APIs",
+      "question": "Explain CORS, cookies, sessions and token-based authentication in a browser application.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Web Development & APIs",
+      "question": "How would you test an API using unit, integration and contract tests?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Web Development & APIs",
+      "question": "A React page repeatedly fetches the same data. How would you identify and fix the cause?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Web Development & APIs",
+      "question": "Compare SQL transactions and application-level validation when saving a multi-step form.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Web Development & APIs",
+      "question": "How would you handle secrets, configuration and logging in a deployed web application?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Web Development & APIs",
+      "question": "Explain caching layers and cache invalidation for a frequently read endpoint.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Web Development & APIs",
+      "question": "How would you design an upload endpoint to reject invalid files and protect against oversized uploads?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Web Development & APIs",
+      "question": "What would you inspect when an API returns correct data but the UI shows stale results?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Web Development & APIs",
+      "question": "How would you implement rate limiting and protect an API from abusive traffic?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Project & Resume Deep Dive",
+      "question": "Choose one project on your resume. Explain the architecture, data flow and your individual contribution.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Project & Resume Deep Dive",
+      "question": "Which design decision in your project was most difficult, what alternatives did you reject, and why?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Project & Resume Deep Dive",
+      "question": "What measurable evidence shows your project works? Describe the evaluation metrics and test cases.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Project & Resume Deep Dive",
+      "question": "Which part of the project did you personally implement, and how could an interviewer verify that?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Project & Resume Deep Dive",
+      "question": "If your dataset doubled in size, which component would fail first and how would you redesign it?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Project & Resume Deep Dive",
+      "question": "What is the biggest limitation of your project and what experiment would you run next?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Project & Resume Deep Dive",
+      "question": "Explain a bug that took time to diagnose, how you found the root cause, and what you learned.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Project & Resume Deep Dive",
+      "question": "How would you protect users’ privacy and security in the project you described?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Project & Resume Deep Dive",
+      "question": "If a stakeholder changed the requirements one week before delivery, how would you respond?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Project & Resume Deep Dive",
+      "question": "Explain why you selected your model, framework or database instead of an alternative.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Project & Resume Deep Dive",
+      "question": "How would you onboard a new developer to your codebase in one hour?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Project & Resume Deep Dive",
+      "question": "Your project demo fails in front of an evaluator. What do you say and do next?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Critical Thinking & System Design",
+      "question": "Design a service that handles 10,000 interview sessions concurrently. Identify bottlenecks and trade-offs.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Critical Thinking & System Design",
+      "question": "A requirement is ambiguous and your manager is unavailable. How do you proceed without building the wrong thing?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Critical Thinking & System Design",
+      "question": "You have one day to fix three bugs: one affects many users, one loses data rarely, and one breaks a demo. Prioritise and explain.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Critical Thinking & System Design",
+      "question": "How would you design a reliable notification system that avoids sending duplicate messages?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Critical Thinking & System Design",
+      "question": "A product metric improves while customer complaints increase. What hypotheses would you test?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Critical Thinking & System Design",
+      "question": "Estimate storage needed for one million users each saving ten 2 MB recordings. State assumptions and units.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Critical Thinking & System Design",
+      "question": "How would you evaluate whether a new feature actually improves user outcomes after release?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Critical Thinking & System Design",
+      "question": "Explain how you would break down an unfamiliar system-design problem before choosing technologies.",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Critical Thinking & System Design",
+      "question": "Your model is accurate but too slow for the product. How would you decide what quality to trade for latency?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Critical Thinking & System Design",
+      "question": "How would you design graceful degradation when an external API is unavailable?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Critical Thinking & System Design",
+      "question": "What assumptions in your solution could be wrong, and how would you test the riskiest one first?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Critical Thinking & System Design",
+      "question": "How would you explain a technical trade-off to a manager who only cares about delivery date and cost?",
+      "difficulty": "intermediate-advanced"
+    },
+    {
+      "category": "Managerial, HR & Behavioural",
+      "question": "Tell me about a disagreement with a teammate. How did you resolve it and what changed afterward?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Managerial, HR & Behavioural",
+      "question": "Describe a time you received critical feedback. What specific behaviour did you change?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Managerial, HR & Behavioural",
+      "question": "The team is behind schedule and a colleague is not delivering. How do you handle it professionally?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Managerial, HR & Behavioural",
+      "question": "You discover you will miss a deadline. When and how do you communicate it, and what options do you offer?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Managerial, HR & Behavioural",
+      "question": "Why this role and company, and which parts of the job description fit your goals and evidence?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Managerial, HR & Behavioural",
+      "question": "Tell me about a failure you owned. What did you do immediately and what did you change long-term?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Managerial, HR & Behavioural",
+      "question": "How do you prioritise when two managers assign urgent work at the same time?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Managerial, HR & Behavioural",
+      "question": "What would you do if asked to present results you believe are misleading?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Managerial, HR & Behavioural",
+      "question": "Why should we hire you when another candidate has more experience?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Managerial, HR & Behavioural",
+      "question": "What technical skill are you currently improving, and what evidence shows consistent progress?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Managerial, HR & Behavioural",
+      "question": "How would you respond if a teammate took credit for work you completed?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Managerial, HR & Behavioural",
+      "question": "What questions would you ask the interviewer to decide whether this role is right for you?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Workplace Judgement & Ethics",
+      "question": "You find a security vulnerability shortly before release. What do you do and who needs to know?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Workplace Judgement & Ethics",
+      "question": "A manager asks you to copy customer data to a personal device to work faster. How do you respond?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Workplace Judgement & Ethics",
+      "question": "You notice a colleague’s code may expose private information. How would you raise the concern?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Workplace Judgement & Ethics",
+      "question": "An AI system makes different error rates for different user groups. How would you investigate and respond?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Workplace Judgement & Ethics",
+      "question": "You made a production change that caused an outage. What are your immediate and follow-up actions?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Workplace Judgement & Ethics",
+      "question": "How do you balance delivery speed with code quality when the deadline is fixed?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Workplace Judgement & Ethics",
+      "question": "You are asked to claim a skill on your resume that you have only studied briefly. What do you do?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Workplace Judgement & Ethics",
+      "question": "A customer asks for a feature that conflicts with privacy requirements. How would you handle the request?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Workplace Judgement & Ethics",
+      "question": "What information should be included in an incident report after a serious system failure?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Workplace Judgement & Ethics",
+      "question": "How would you respond if an evaluation dataset contained sensitive personal information?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Workplace Judgement & Ethics",
+      "question": "You disagree with a senior engineer’s decision. How do you challenge it constructively?",
+      "difficulty": "intermediate"
+    },
+    {
+      "category": "Workplace Judgement & Ethics",
+      "question": "How do you decide whether an issue should be escalated immediately or handled within the team?",
+      "difficulty": "intermediate"
+    }
+  ]
+}

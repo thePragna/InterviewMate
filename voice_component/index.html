@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box}body{margin:0;font:14px system-ui,-apple-system,Segoe UI,sans-serif;color:#edf5ff;background:transparent}.panel{border:1px solid #25415e;background:linear-gradient(135deg,#10233a,#0b1728);border-radius:18px;padding:18px}.status{display:flex;align-items:center;gap:10px;font-weight:650;margin-bottom:12px}.dot{width:10px;height:10px;border-radius:50%;background:#8496ad;flex:none}.dot.live{background:#42e0b1;box-shadow:0 0 0 5px #42e0b122}.actions{display:flex;gap:9px;flex-wrap:wrap}button{border:0;border-radius:11px;padding:11px 15px;font-weight:700;cursor:pointer;background:#54d8ff;color:#062034;min-height:42px}button.secondary{background:#213851;color:#e8f4ff}button:disabled{opacity:.45;cursor:not-allowed}.transcript{display:none!important}.small{font-size:12px;color:#9eb4cc;margin-top:8px}.bar{height:5px;border-radius:99px;background:#203650;margin-top:12px;overflow:hidden}.fill{height:100%;width:0;background:#42e0b1;transition:width .2s}.notice{padding:9px 11px;border-radius:9px;background:#172d43;margin-top:10px;color:#d9e9f8;line-height:1.45}.notice.error{background:#48252b;color:#ffe0e2}button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+</style></head>
+<body><div class="panel">
+ <div class="status"><span class="dot" id="dot"></span><span id="status" role="status" aria-live="polite">Microphone permission is needed to begin</span></div>
+ <div class="actions"><button id="enable">🎙️ Enable microphone</button><button class="secondary" id="testSpeaker">🔊 Test speaker</button><button class="secondary" id="start" disabled>Start listening</button><button class="secondary" id="stop" disabled>Stop listening</button><button class="secondary" id="repeat" disabled>🔊 Repeat question</button></div>
+ <div class="transcript" id="transcript" aria-live="polite">Click Enable microphone and allow access in your browser. The interviewer will ask the question first, then listen to your answer.</div>
+ <div class="bar"><div class="fill" id="fill"></div></div>
+ <div class="notice" id="notice">Microphone: not enabled · Speech recognition: checking browser support</div>
+ <div class="small">Use Chrome or Edge on localhost or HTTPS. If voice recognition is unsupported, type your answer in the text-answer field below the interview.</div>
+</div>
+<script>
+'use strict';
+const send=value=>parent.postMessage({isStreamlitMessage:true,type:'streamlit:setComponentValue',value,dataType:'json'},'*');
+const ready=()=>parent.postMessage({isStreamlitMessage:true,type:'streamlit:componentReady',apiVersion:1},'*');
+const height=()=>parent.postMessage({isStreamlitMessage:true,type:'streamlit:setFrameHeight',height:document.body.scrollHeight},'*');
+const $=id=>document.getElementById(id);
+let args={},recognition=null,mediaStream=null,audioContext=null,analyser=null,meterFrame=null;
+let finalText='',interimText='',silenceTimer=null,maxAnswerTimer=null,answerCounter=0,lastSpoken='',sessionId='',generation=0;
+let state='READY',micGranted=false,recognitionRunning=false,answerSubmitted=false,sawSpeech=false,answerStartedAt=0,terminal=true,manualStop=false;
+const SILENCE_MS=5000,MAX_ANSWER_MS=120000;
+const terminalStates=new Set(['COMPLETED','TERMINATING','TERMINATED']);
+function status(message,live=false){$('status').textContent=message;$('dot').className='dot'+(live?' live':'');}
+function notice(message,isError=false){$('notice').textContent=message;$('notice').className='notice'+(isError?' error':'');}
+function clearTimers(){if(silenceTimer!==null){clearTimeout(silenceTimer);silenceTimer=null;}if(maxAnswerTimer!==null){clearTimeout(maxAnswerTimer);maxAnswerTimer=null;}if(meterFrame!==null){cancelAnimationFrame(meterFrame);meterFrame=null;}}
+function live(token=generation){return !terminal && state!=='TERMINATING' && state!=='COMPLETED' && state!=='TERMINATED' && !!args.enabled && token===generation;}
+function reportStatus(kind,message,extra={}){send({event:kind,message,session:sessionId,state,...extra});}
+function cleanupTracks(){if(mediaStream){for(const track of mediaStream.getTracks()){try{track.stop()}catch(_){}}mediaStream=null;}if(audioContext){try{audioContext.close()}catch(_){}audioContext=null;analyser=null;}}
+function stopRecognition(abort=true){clearTimers();manualStop=true;if(recognition){try{if(abort)recognition.abort();else recognition.stop()}catch(_){}}recognitionRunning=false;}
+function stopEverything(label='Interview ended — microphone and audio stopped',finalState='TERMINATED'){
+ if(terminal && terminalStates.has(state))return;
+ state='TERMINATING';terminal=true;generation++;clearTimers();
+ if(recognition){try{recognition.onstart=recognition.onresult=recognition.onerror=recognition.onend=null;recognition.abort()}catch(_){}recognition=null;}
+ recognitionRunning=false;
+ if('speechSynthesis' in window){try{speechSynthesis.cancel()}catch(_){}}
+ cleanupTracks();finalText='';interimText='';state=finalState;status(label,false);notice('Microphone: released · Interview: '+finalState.toLowerCase(),false);
+ $('enable').disabled=true;$('start').disabled=true;$('stop').disabled=true;$('repeat').disabled=true;
+}
+async function enableMicrophone(){
+ if(terminal || !args.enabled || micGranted)return;
+ // Set the request state first. speakQuestion may then deliberately switch it to AI_SPEAKING.
+ state='REQUESTING_MICROPHONE';
+ // Start speech directly from the click; do not overwrite AI_SPEAKING below.
+ if(args.question && 'speechSynthesis' in window && state!=='AI_SPEAKING'){speakQuestion(true);}
+ if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){notice('This browser or page context does not support microphone access. Open the app in Chrome/Edge using localhost or HTTPS.',true);status('Microphone unavailable',false);reportStatus('microphone_unavailable','getUserMedia is not available');return;}
+ $('enable').disabled=true;if(state!=='AI_SPEAKING')status('Waiting for microphone permission…',false);notice('Your browser should show a microphone permission prompt.');
+ try{
+  const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
+  if(terminal || !args.enabled){stream.getTracks().forEach(t=>t.stop());return;}
+  mediaStream=stream;micGranted=true;state='ACTIVE';$('start').disabled=false;$('repeat').disabled=false;
+  const audioTrack=stream.getAudioTracks()[0];if(audioTrack){audioTrack.onended=()=>{if(!terminal){micGranted=false;notice('The microphone device was disconnected. Enable it again to continue.',true);status('Microphone disconnected',false);reportStatus('microphone_lost','Microphone track ended');}};}
+  try{audioContext=new (window.AudioContext||window.webkitAudioContext)();const source=audioContext.createMediaStreamSource(stream);analyser=audioContext.createAnalyser();analyser.fftSize=256;source.connect(analyser);}
+  catch(_){audioContext=null;analyser=null;}
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){notice('Microphone permission granted, but this browser does not provide SpeechRecognition. Use the text-answer fallback.',true);status('Microphone ready · voice recognition unsupported',false);reportStatus('microphone_ready','SpeechRecognition unsupported');}
+  else{notice('Microphone: enabled · Speech recognition: available');status('Microphone enabled',true);reportStatus('microphone_ready','Microphone permission granted');if(state==='LISTENING')startRecognition();else if(state!=='AI_SPEAKING' && args.question && lastSpoken!==args.question)speakQuestion(true);}
+  startMeter();height();
+ }catch(err){
+  $('enable').disabled=false;state='READY';micGranted=false;
+  const map={NotAllowedError:'Microphone permission was denied or blocked. Allow Microphone for this site in the browser address-bar settings, then click Enable microphone.',PermissionDeniedError:'Microphone permission was denied. Allow it in browser site settings and try again.',NotFoundError:'No microphone was found. Connect or enable a microphone, then try again.',NotReadableError:'The microphone is busy or unavailable. Close other apps using it and try again.',OverconstrainedError:'The requested microphone settings are not supported by this device.'};
+  const message=map[err&&err.name]||('Could not access the microphone: '+(err&&err.message?err.message:'unknown browser error'));
+  notice(message,true);status('Microphone access failed',false);reportStatus('microphone_error',message,{errorName:err&&err.name||'Error'});
+ }
+}
+function startMeter(){if(!analyser||terminal)return;const data=new Uint8Array(analyser.frequencyBinCount);const tick=()=>{if(!analyser||terminal){meterFrame=null;return;}analyser.getByteTimeDomainData(data);let sum=0;for(const v of data){const n=(v-128)/128;sum+=n*n;}const rms=Math.sqrt(sum/data.length);$('fill').style.width=Math.min(100,Math.round(rms*500))+'%';meterFrame=requestAnimationFrame(tick);};if(meterFrame===null)meterFrame=requestAnimationFrame(tick);}
+function createRecognition(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return null;const r=new SR();r.lang='en-IN';r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
+ r.onstart=()=>{if(!live()){try{r.abort()}catch(_){}return;}recognitionRunning=true;state='LISTENING';status('Listening — your answer will submit after 5 seconds of silence',true);};
+ r.onresult=e=>{if(!live()||state!=='LISTENING'||answerSubmitted)return;let changed=false;for(let i=e.resultIndex;i<e.results.length;i++){const result=e.results[i];const part=(result[0]&&result[0].transcript||'').trim();if(!part)continue;if(result.isFinal){finalText=(finalText+' '+part).trim();interimText='';changed=true;}else{interimText=part;changed=true;}}
+  const shown=(finalText+' '+interimText).trim();if(shown){$('transcript').textContent=shown;sawSpeech=true;if(!answerStartedAt)answerStartedAt=Date.now();resetSilenceTimer();}
+ };
+ r.onerror=e=>{if(!live())return;recognitionRunning=false;if(e.error==='not-allowed'||e.error==='service-not-allowed'){notice('Speech recognition permission was denied. Check the browser microphone/site permissions.',true);status('Speech recognition blocked',false);reportStatus('recognition_error','Speech recognition permission denied');}else if(e.error==='audio-capture'){notice('No usable microphone input was found. Check your device and browser permissions.',true);status('Microphone input unavailable',false);}else if(e.error!=='no-speech'&&e.error!=='aborted'){notice('Speech recognition issue: '+e.error+'. You can retry or use text input.',true);status('Voice recognition needs attention',false);}};
+ r.onend=()=>{recognitionRunning=false;if(!live())return;if(!manualStop&&state==='LISTENING'&&micGranted){setTimeout(()=>{if(live()&&state==='LISTENING'&&!recognitionRunning)startRecognition();},250);}};
+ return r;}
+function startRecognition(){if(!live()||!micGranted||state==='AI_SPEAKING'||state==='AI_RESPONDING'||state==='PROCESSING_ANSWER'||recognitionRunning)return;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){status('Voice recognition unavailable — use text answer',false);return;}if(!recognition)recognition=createRecognition();if(!recognition){status('Voice recognition unavailable — use text answer',false);return;}manualStop=false;try{recognition.start();}catch(err){if(err&&err.name==='InvalidStateError'){return;}status('Could not start speech recognition. Click Start listening to retry.',false);}}
+function resetSilenceTimer(){if(silenceTimer!==null)clearTimeout(silenceTimer);silenceTimer=null;const token=generation;silenceTimer=setTimeout(()=>{silenceTimer=null;if(!live(token)||state!=='LISTENING'||answerSubmitted||!sawSpeech)return;submitAnswer(token);},SILENCE_MS);if(maxAnswerTimer===null){maxAnswerTimer=setTimeout(()=>{if(live(token)&&state==='LISTENING'&&!answerSubmitted&&sawSpeech)submitAnswer(token);},MAX_ANSWER_MS);}}
+function speakQuestion(force=false){const q=(args.question||'').trim();if(!live()||!q||(!force&&q===lastSpoken))return;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!('speechSynthesis'in window)){status('Speech playback unavailable — read the question and use text input',false);return;}
+ stopRecognition(true);state='AI_SPEAKING';answerSubmitted=false;sawSpeech=false;finalText='';interimText='';answerStartedAt=0;lastSpoken=q;try{speechSynthesis.cancel();}catch(_){}const token=generation;const u=new SpeechSynthesisUtterance(q);u.lang='en-IN';u.rate=.96;u.pitch=1;
+ u.onstart=()=>{if(live(token)){state='AI_SPEAKING';status('AI interviewer is asking the question…',false);}};
+ u.onend=()=>{if(!live(token)||token!==generation)return;state='LISTENING';if(micGranted){status('Your turn — speak now',true);$('transcript').textContent='Listening for your answer…';startRecognition();}else{status('Question spoken — waiting for microphone permission',false);$('transcript').textContent='Allow microphone access to answer aloud.';}};
+ u.onerror=()=>{if(!live(token))return;state='LISTENING';status('Could not play question audio. Check your device output and browser sound settings; you can read the question and use text input.',false);reportStatus('speech_error','Browser speech synthesis failed');if(micGranted)startRecognition();};
+ let queued=false;const speak=()=>{if(!live(token)||queued)return;queued=true;const voices=speechSynthesis.getVoices();const preferred=voices.find(v=>/^en-IN$/i.test(v.lang))||voices.find(v=>/^en(-|$)/i.test(v.lang));if(preferred)u.voice=preferred;try{speechSynthesis.speak(u);setTimeout(()=>{if(live(token)&&speechSynthesis.speaking===false&&state==='AI_SPEAKING'){status('Speech was queued but no audio started. Click Test speaker and check Chrome/Windows output volume.',false);reportStatus('speech_not_started','Speech synthesis did not enter speaking state');}},1200);}catch(err){if(live(token)){status('Browser could not start speech playback: '+(err.message||'unknown error'),false);reportStatus('speech_error',String(err.message||err));}}};
+ // Queue immediately even if voices have not loaded; update voice selection before playback if possible.
+ speak();if(speechSynthesis.getVoices().length===0)speechSynthesis.addEventListener('voiceschanged',()=>{if(!queued&&live(token))speak();},{once:true});}
+function submitAnswer(token=generation){if(!live(token)||state!=='LISTENING'||answerSubmitted)return;clearTimers();const answer=(finalText+' '+interimText).trim();if(!answer){sawSpeech=false;status('I did not catch an answer. Please try speaking again.',false);$('transcript').textContent='No answer captured yet. Speak when ready.';return;}answerSubmitted=true;state='PROCESSING_ANSWER';stopRecognition(true);if('speechSynthesis'in window)speechSynthesis.cancel();recognitionRunning=false;$('transcript').textContent='';status('Answer submitted — AI is preparing feedback…',false);const answerId=sessionId+'-'+Date.now()+'-'+(++answerCounter);send({answer,answer_id:answerId,event:'answer_submitted',session:sessionId,state});finalText='';interimText='';sawSpeech=false;answerStartedAt=0;}
+$('enable').addEventListener('click',enableMicrophone);
+$('testSpeaker').addEventListener('click',()=>{if(!live())return;if(!('speechSynthesis' in window)){notice('This browser does not support speech synthesis. Try current Chrome or Edge.',true);return;}try{speechSynthesis.cancel();const test=new SpeechSynthesisUtterance('Hello. This is a speaker test for InterviewMate.');test.lang='en-IN';test.rate=1;test.onstart=()=>{status('Speaker test is playing',true);notice('If you can hear this sentence, browser audio output is working.');};test.onend=()=>{if(live())status('Speaker test finished',false);};test.onerror=e=>{if(live()){status('Speaker test failed: '+(e.error||'unknown error'),false);notice('Check Chrome site sound settings, Windows output device, and volume.',true);reportStatus('speech_test_error',e.error||'unknown');}};speechSynthesis.speak(test);}catch(err){notice('Unable to start speaker test: '+(err.message||'unknown error'),true);}});
+$('start').addEventListener('click',()=>{if(!live()||!micGranted)return;if(state==='AI_SPEAKING'||state==='AI_RESPONDING'){status('Please wait until the interviewer finishes speaking.',false);return;}if(state!=='LISTENING'){finalText='';interimText='';sawSpeech=false;answerSubmitted=false;state='LISTENING';startRecognition();}});
+$('stop').addEventListener('click',()=>{if(!live())return;stopRecognition(true);state='ACTIVE';status('Listening paused',false);$('start').disabled=false;});
+$('repeat').addEventListener('click',()=>{if(live()&&micGranted){lastSpoken='';speakQuestion(true);}});
+window.addEventListener('pagehide',()=>stopEverything('Page closed — microphone released','TERMINATED'));
+window.addEventListener('beforeunload',()=>stopEverything('Page closed — microphone released','TERMINATED'));
+window.addEventListener('message',e=>{const d=e.data;if(!d||d.type!=='streamlit:render')return;const next=d.args||{};const oldQuestion=args.question;const oldEnabled=!!args.enabled;const nextSession=next.session||'';
+ if(nextSession && nextSession!==sessionId){if(!terminal||micGranted)stopEverything('Previous interview closed — microphone released','TERMINATED');generation++;sessionId=nextSession;args=next;state=next.enabled?'READY':'TERMINATED';terminal=!next.enabled;micGranted=false;recognition=null;finalText='';interimText='';lastSpoken='';answerCounter=0;answerSubmitted=false;sawSpeech=false;manualStop=false;$('enable').disabled=!next.enabled;$('start').disabled=true;$('stop').disabled=true;$('repeat').disabled=true;status(next.enabled?'Enable microphone to begin':'Interview is not active',false);notice(next.enabled?'Microphone: not enabled':'Interview ended',false);}
+ else{args=next;if(!next.enabled){stopEverything('Interview ended — microphone and audio stopped',next.lifecycle==='COMPLETED'?'COMPLETED':'TERMINATED');height();return;}if(terminal){terminal=false;generation++;state='READY';$('enable').disabled=false;status('Enable microphone to continue',false);}}
+ if(!args.enabled){height();return;}
+ if(args.question && args.question!==oldQuestion){lastSpoken='';if(micGranted){speakQuestion(true);}else{status('Click Enable microphone to hear the question',false);$('transcript').textContent='';}}
+ else if(!oldEnabled && args.enabled && micGranted && args.question){speakQuestion(true);}
+ $('stop').disabled=!micGranted||!recognitionRunning; $('repeat').disabled=!micGranted;height();
+});
+const supported=!!(window.SpeechRecognition||window.webkitSpeechRecognition);notice('Microphone: not enabled · Speech recognition: '+(supported?'available in this browser':'not supported; use Chrome/Edge or text fallback'),false);ready();height();
+</script></body></html>

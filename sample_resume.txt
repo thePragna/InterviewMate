@@ -1,0 +1,15 @@
+Jyothirmayee Peddinti
+B.Tech CSE (AI & ML)
+
+Skills: Python, C, Java, SQL, Machine Learning, Flask, Streamlit, Git, GitHub
+
+Projects:
+1. Credit Card Approval Prediction using Machine Learning.
+2. Maternal Health Care web application.
+3. InterviewMate AI placement preparation platform.
+
+Strengths:
+Quick learner, adaptable, team worker, calm under pressure.
+
+Education:
+B.Tech CSE (AI & ML)
